@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Incident } from '../models/incident.model';
 
 @Injectable({
@@ -38,14 +39,32 @@ export class IncidentService {
       params = params.set('status', filters.status);
     }
 
-    return this.http.get<{ incidents: Incident[]; pages: number }>(this.baseUrl, { params });
+    return this.http.get<any>(this.baseUrl, { params }).pipe(
+      map(response => ({
+        ...response,
+        incidents: response.incidents.map((incident: any) => ({
+          ...incident,
+          id: incident._id
+        }))
+      }))
+    );
   }
 
   createIncident(payload: Partial<Incident>) {
-    return this.http.post<Incident>(this.baseUrl, payload);
+    return this.http.post<any>(this.baseUrl, payload).pipe(
+      map(incident => ({
+        ...incident,
+        id: incident._id
+      }))
+    );
   }
 
   updateIncident(id: string, payload: Partial<Incident>) {
-    return this.http.put<Incident>(`${this.baseUrl}/${id}`, payload);
+    return this.http.put<any>(`${this.baseUrl}/${id}`, payload).pipe(
+      map(incident => ({
+        ...incident,
+        id: incident._id
+      }))
+    );
   }
 }
