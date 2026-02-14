@@ -4,6 +4,24 @@
     placeholder="Search..." 
     (input)="onSearchChange($event)"
   >
+  
+  <!-- Add Filter Controls -->
+  <div class="filter-controls">
+    <select (change)="setFilter('severity', $event)" class="filter-select">
+      <option value="">All Severities</option>
+      <option value="SEV1">SEV1</option>
+      <option value="SEV2">SEV2</option>
+      <option value="SEV3">SEV3</option>
+      <option value="SEV4">SEV4</option>
+    </select>
+
+    <select (change)="setFilter('status', $event)" class="filter-select">
+      <option value="">All Status</option>
+      <option value="OPEN">Open</option>
+      <option value="MITIGATED">Mitigated</option>
+      <option value="RESOLVED">Resolved</option>
+    </select>
+  </div>
 </div>
 
 <div *ngIf="loading">Loading...</div>
@@ -29,8 +47,8 @@
       <tr *ngFor="let incident of incidents" (click)="openDetail(incident)" class="clickable">
         <td>{{incident.title}}</td>
         <td>{{incident.service}}</td>
-        <td>{{incident.severity}}</td>
-        <td>{{incident.status}}</td>
+        <td><span class="severity-badge" [ngClass]="'severity-' + incident.severity">{{incident.severity}}</span></td>
+        <td><span class="status-badge" [ngClass]="'status-' + incident.status">{{incident.status}}</span></td>
         <td>{{incident.owner || '-'}}</td>
         <td>{{incident.createdAt | date:'short'}}</td>
       </tr>

@@ -10,7 +10,7 @@ import { Incident } from '../../models/incident.model';
   standalone: true,
   imports: [
     CommonModule,
-    HttpClientModule, // <-- provides HttpClient to your service
+    HttpClientModule,
     FormsModule
   ],
   templateUrl: './incident-table.component.html',
@@ -112,18 +112,17 @@ export class IncidentTableComponent {
       });
   }
 
-  onSearchChange(term: string | Event): void {
-    if (term instanceof Event) {
-      const target = term.target as HTMLInputElement;
-      this.searchTerm = target.value;
-    } else {
-      this.searchTerm = term;
-    }
+  onSearchChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchTerm = target.value;
     this.page = 1;
     this.loadIncidents();
   }
 
-  setFilter(filterKey: string, value: string): void {
+  setFilter(filterKey: string, event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
+    
     if (value) {
       this.filters[filterKey as keyof typeof this.filters] = value;
     } else {
@@ -143,7 +142,6 @@ export class IncidentTableComponent {
     this.loadIncidents();
   }
 
-  // Rename method to match HTML template
   setPage(pageNumber: number): void {
     if (pageNumber >= 1 && pageNumber <= this.totalPages) {
       this.page = pageNumber;
