@@ -40,4 +40,12 @@ export class IncidentService {
 
     return this.http.get<{ incidents: Incident[]; pages: number }>(this.baseUrl, { params });
   }
+
+  createIncident(payload: Partial<Incident>) {
+    return this.http.post<Incident>(this.baseUrl, payload);
+  }
+
+  updateIncident(id: string, payload: Partial<Incident>) {
+    return this.http.put<Incident>(`${this.baseUrl}/${id}`, payload);
+  }
 }

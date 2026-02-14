@@ -20,6 +20,12 @@ export class IncidentTableComponent {
   incidents: Incident[] = [];
   loading = false;
 
+  // View state: 'list' | 'detail' | 'create'
+  view: 'list' | 'detail' | 'create' = 'list';
+
+  // Currently selected incident for detail/edit
+  selectedIncident: Incident | null = null;
+
   // Pagination
   page = 1;
   limit = 10;
@@ -33,10 +39,60 @@ export class IncidentTableComponent {
   searchTerm: string = '';
   filters: { severity?: string; status?: string } = {};
 
+  // Temp model for create form
+  creating: Partial<Incident> = {};
+
   constructor(private incidentService: IncidentService) {}
 
   ngOnInit(): void {
     this.loadIncidents();
+  }
+
+  openDetail(incident: Incident): void {
+    this.selectedIncident = { ...incident };
+    this.view = 'detail';
+  }
+
+  showCreate(): void {
+    this.creating = {
+      title: '',
+      service: '',
+      severity: 'SEV1',
+      status: 'OPEN',
+      owner: '',
+      summary: ''
+    };
+    this.view = 'create';
+  }
+
+  cancelView(): void {
+    this.view = 'list';
+    this.selectedIncident = null;
+  }
+
+  saveChanges(): void {
+    if (!this.selectedIncident) return;
+    const id = this.selectedIncident.id;
+    const payload: Partial<Incident> = { ...this.selectedIncident };
+    this.incidentService.updateIncident(id, payload).subscribe({
+      next: (updated) => {
+        this.view = 'list';
+        this.selectedIncident = null;
+        this.loadIncidents();
+      },
+      error: (err) => console.error('Error updating incident', err),
+    });
+  }
+
+  createIncident(): void {
+    this.incidentService.createIncident(this.creating).subscribe({
+      next: (created) => {
+        this.view = 'list';
+        this.creating = {};
+        this.loadIncidents();
+      },
+      error: (err) => console.error('Error creating incident', err),
+    });
   }
 
   loadIncidents(): void {
