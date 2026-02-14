@@ -60,7 +60,7 @@ export class IncidentService {
   }
 
   updateIncident(id: string, payload: Partial<Incident>) {
-    return this.http.put<any>(`${this.baseUrl}/${id}`, payload).pipe(
+    return this.http.patch<any>(`${this.baseUrl}/${id}`, payload).pipe(
       map(incident => ({
         ...incident,
         id: incident._id
