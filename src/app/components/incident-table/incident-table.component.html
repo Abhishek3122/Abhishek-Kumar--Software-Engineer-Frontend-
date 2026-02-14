@@ -1,0 +1,38 @@
+<div class="search-container">
+  <input 
+    type="text" 
+    placeholder="Search..." 
+    (input)="onSearchChange($event)"
+  >
+</div>
+
+<div *ngIf="loading">Loading...</div>
+
+<table *ngIf="!loading" class="incident-table">
+  <thead>
+    <tr>
+      <th (click)="setSort('title')">Title</th>
+      <th (click)="setSort('service')">Service</th>
+      <th (click)="setSort('severity')">Severity</th>
+      <th (click)="setSort('status')">Status</th>
+      <th>Owner</th>
+      <th (click)="setSort('createdAt')">Created</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let incident of incidents">
+      <td>{{incident.title}}</td>
+      <td>{{incident.service}}</td>
+      <td>{{incident.severity}}</td>
+      <td>{{incident.status}}</td>
+      <td>{{incident.owner || '-'}}</td>
+      <td>{{incident.createdAt | date:'short'}}</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="pagination">
+  <button (click)="setPage(page-1)" [disabled]="page <= 1">Prev</button>
+  <span>Page {{page}} / {{totalPages}}</span>
+  <button (click)="setPage(page+1)" [disabled]="page >= totalPages">Next</button>
+</div>
