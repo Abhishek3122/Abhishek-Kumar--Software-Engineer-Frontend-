@@ -8,12 +8,14 @@ import { Incident } from '../models/incident.model';
   providedIn: 'root',
 })
 export class IncidentService {
-  // 1. Updated to match your Express route (/api/incidents)
-  // 2. Used 127.0.0.1 to avoid potential IPv6 'localhost' resolution issues
-  private baseUrl = 'https://abhishek-kumar-software-engineer.onrender.com';
+
+  // ✅ IMPORTANT: Must include /api/incidents
+  private baseUrl =
+    'https://abhishek-kumar-software-engineer.onrender.com/api/incidents';
 
   constructor(private http: HttpClient) {}
 
+  // ✅ GET with pagination, filter, sorting
   getIncidents(
     page: number,
     limit: number,
@@ -22,8 +24,7 @@ export class IncidentService {
     sortBy: string,
     sortOrder: 'asc' | 'desc'
   ): Observable<{ incidents: Incident[]; pages: number }> {
-    
-    // Ensure numeric values are converted to strings for HttpParams
+
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString())
@@ -31,14 +32,14 @@ export class IncidentService {
       .set('sortBy', sortBy)
       .set('sortOrder', sortOrder);
 
-    // Apply optional filters
-    // support multiple severity values (append each)
-    if (filters.severity && Array.isArray(filters.severity) && filters.severity.length) {
-      filters.severity.forEach(s => {
-        params = params.append('severity', s);
+    // Multiple severity filter support
+    if (filters?.severity?.length) {
+      filters.severity.forEach(sev => {
+        params = params.append('severity', sev);
       });
     }
-    if (filters.status) {
+
+    if (filters?.status) {
       params = params.set('status', filters.status);
     }
 
@@ -47,13 +48,14 @@ export class IncidentService {
         ...response,
         incidents: response.incidents.map((incident: any) => ({
           ...incident,
-          id: incident._id
+          id: incident._id   // Map MongoDB _id → id
         }))
       }))
     );
   }
 
-  createIncident(payload: Partial<Incident>) {
+  // ✅ CREATE incident
+  createIncident(payload: Partial<Incident>): Observable<Incident> {
     return this.http.post<any>(this.baseUrl, payload).pipe(
       map(incident => ({
         ...incident,
@@ -62,7 +64,8 @@ export class IncidentService {
     );
   }
 
-  updateIncident(id: string, payload: Partial<Incident>) {
+  // ✅ UPDATE incident
+  updateIncident(id: string, payload: Partial<Incident>): Observable<Incident> {
     return this.http.patch<any>(`${this.baseUrl}/${id}`, payload).pipe(
       map(incident => ({
         ...incident,
