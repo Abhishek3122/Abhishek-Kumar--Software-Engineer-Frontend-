@@ -157,14 +157,15 @@ export class IncidentTableComponent {
     this.loadIncidents();
   }
 
-  setFilter(filterKey: string, event: Event): void {
+  // Narrowed to only 'status' to avoid assigning string into severity[]
+  setFilter(filterKey: 'status', event: Event): void {
     const target = event.target as HTMLSelectElement;
     const value = target.value;
-    
+
     if (value) {
-      this.filters[filterKey as keyof typeof this.filters] = value;
+      this.filters.status = value;
     } else {
-      delete this.filters[filterKey as keyof typeof this.filters];
+      delete this.filters.status;
     }
     this.page = 1;
     this.loadIncidents();
