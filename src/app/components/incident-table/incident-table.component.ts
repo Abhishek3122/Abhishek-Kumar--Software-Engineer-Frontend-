@@ -37,7 +37,10 @@ export class IncidentTableComponent {
 
   // Search & filter
   searchTerm: string = '';
-  filters: { severity?: string; status?: string } = {};
+  filters: { severity?: string[]; status?: string } = {};
+
+  // helper severity list
+  severities = ['SEV1', 'SEV2', 'SEV3', 'SEV4'];
 
   // Temp model for create form
   creating: Partial<Incident> = {};
@@ -93,6 +96,41 @@ export class IncidentTableComponent {
       },
       error: (err) => console.error('Error creating incident', err),
     });
+  }
+
+  // Toggle severity in filter (multi-select)
+  toggleSeverityFilter(sev: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (!this.filters.severity) this.filters.severity = [];
+    if (checked) {
+      if (!this.filters.severity.includes(sev)) this.filters.severity.push(sev);
+    } else {
+      this.filters.severity = this.filters.severity.filter(s => s !== sev);
+      if (this.filters.severity.length === 0) delete this.filters.severity;
+    }
+    this.page = 1;
+    this.loadIncidents();
+  }
+
+  // Detail: checkboxes behave single-select visually
+  setSeverityForSelected(sev: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (!this.selectedIncident) return;
+    if (checked) {
+      this.selectedIncident.severity = sev as Incident['severity'];
+    } else {
+      delete this.selectedIncident.severity;
+    }
+  }
+
+  // Create: checkboxes behave single-select visually
+  setSeverityForCreating(sev: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked) {
+      this.creating.severity = sev as Incident['severity'];
+    } else {
+      delete this.creating.severity;
+    }
   }
 
   loadIncidents(): void {

@@ -18,7 +18,7 @@ export class IncidentService {
     page: number,
     limit: number,
     search: string,
-    filters: { severity?: string; status?: string },
+    filters: { severity?: string[]; status?: string },
     sortBy: string,
     sortOrder: 'asc' | 'desc'
   ): Observable<{ incidents: Incident[]; pages: number }> {
@@ -32,8 +32,11 @@ export class IncidentService {
       .set('sortOrder', sortOrder);
 
     // Apply optional filters
-    if (filters.severity) {
-      params = params.set('severity', filters.severity);
+    // support multiple severity values (append each)
+    if (filters.severity && Array.isArray(filters.severity) && filters.severity.length) {
+      filters.severity.forEach(s => {
+        params = params.append('severity', s);
+      });
     }
     if (filters.status) {
       params = params.set('status', filters.status);

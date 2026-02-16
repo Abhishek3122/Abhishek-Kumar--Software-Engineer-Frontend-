@@ -5,15 +5,13 @@
     (input)="onSearchChange($event)"
   >
   
-  <!-- Add Filter Controls -->
+  <!-- Filter Controls: severity checkboxes -->
   <div class="filter-controls">
-    <select (change)="setFilter('severity', $event)" class="filter-select">
-      <option value="">All Severities</option>
-      <option value="SEV1">SEV1</option>
-      <option value="SEV2">SEV2</option>
-      <option value="SEV3">SEV3</option>
-      <option value="SEV4">SEV4</option>
-    </select>
+    <div class="filter-select" style="display:flex; gap:8px; align-items:center;">
+      <label *ngFor="let sev of severities" style="margin-right:6px;">
+        <input type="checkbox" [checked]="filters.severity?.includes(sev)" (change)="toggleSeverityFilter(sev, $event)"> {{sev}}
+      </label>
+    </div>
 
     <select (change)="setFilter('status', $event)" class="filter-select">
       <option value="">All Status</option>
@@ -72,12 +70,14 @@
 
     <div class="field">
       <label>Severity:</label>
-      <select [(ngModel)]="selectedIncident!.severity">
-        <option value="SEV1">SEV1</option>
-        <option value="SEV2">SEV2</option>
-        <option value="SEV3">SEV3</option>
-        <option value="SEV4">SEV4</option>
-      </select>
+      <label *ngFor="let sev of severities" style="display:inline-block; margin-right:8px;">
+        <input
+          type="checkbox"
+          [checked]="selectedIncident?.severity === sev"
+          (change)="setSeverityForSelected(sev, $event)"
+        >
+        {{sev}}
+      </label>
     </div>
 
     <div class="field">
@@ -125,10 +125,9 @@
 
     <div class="field">
       <label>Severity</label>
-      <label><input type="radio" name="sev" value="SEV1" [(ngModel)]="creating.severity"> SEV1</label>
-      <label><input type="radio" name="sev" value="SEV2" [(ngModel)]="creating.severity"> SEV2</label>
-      <label><input type="radio" name="sev" value="SEV3" [(ngModel)]="creating.severity"> SEV3</label>
-      <label><input type="radio" name="sev" value="SEV4" [(ngModel)]="creating.severity"> SEV4</label>
+      <label *ngFor="let sev of severities" style="display:inline-block; margin-right:8px;">
+        <input type="checkbox" [checked]="creating.severity === sev" (change)="setSeverityForCreating(sev, $event)"> {{sev}}
+      </label>
     </div>
 
     <div class="field">
