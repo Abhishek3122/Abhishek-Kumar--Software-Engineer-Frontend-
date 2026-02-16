@@ -10,7 +10,7 @@ import { Incident } from '../models/incident.model';
 export class IncidentService {
   // 1. Updated to match your Express route (/api/incidents)
   // 2. Used 127.0.0.1 to avoid potential IPv6 'localhost' resolution issues
-  private baseUrl = 'http://127.0.0.1:5000/api/incidents';
+  private baseUrl = 'https://abhishek-kumar-software-engineer.onrender.com';
 
   constructor(private http: HttpClient) {}
 
